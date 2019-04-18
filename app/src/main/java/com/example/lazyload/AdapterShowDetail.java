@@ -41,7 +41,6 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
 
         }
         viewHolder.country.setText(dsDetail.get(i).getCountry());
-
     }
     public void  addData(ArrayList<DatailInfo> datas){
         for(DatailInfo data : datas)

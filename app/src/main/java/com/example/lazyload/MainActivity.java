@@ -1,16 +1,15 @@
 package com.example.lazyload;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ProgressBar;
-
+import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,13 +20,15 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
     int limit=10;
     int offset=0;
+    int currentItems, totalItems, scrollOutItems;
     private SOService mService;
     AdapterShowDetail adapterShowDetail;
     RecyclerView rvDetail;
     ProgressBar progressBar;
     ArrayList<DatailInfo> details;
-    Boolean isLoading = true;
-    private ResultViewModel viewModel;
+    Boolean isLoading = false;
+    private  ResultViewModel viewModel;
+
     LinearLayoutManager layoutManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,42 +44,46 @@ public class MainActivity extends AppCompatActivity {
         rvDetail.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvDetail.setLayoutManager(layoutManager);
-        loadData();
 
         rvDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-
-                if(dy>0)
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
                 {
-                    if(isLoading)
-                    {
-                           offset=offset+10;
-                           isLoading=false;
-
-                    }
-                    if(!isLoading ){
-                        perform();
-                        isLoading=true;
-
-                    }
+                    isLoading = true;
                 }
             }
-        });
-        viewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
 
-        viewModel.getDataSave().observe(this, new Observer<ArrayList<DatailInfo>>() {
             @Override
-            public void onChanged(@Nullable ArrayList<DatailInfo> datailInfos) {
-                adapterShowDetail=new AdapterShowDetail(datailInfos,MainActivity.this);
-                rvDetail.setAdapter(adapterShowDetail);
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                currentItems = layoutManager.getChildCount();
+                totalItems = layoutManager.getItemCount();
+                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+
+                if(isLoading && (currentItems + scrollOutItems == totalItems))
+                {
+                    isLoading = false;
+                    offset=offset+10;
+                    progressBar.setVisibility(View.VISIBLE);
+
+                    perform();
+                }
 
             }
-
         });
+
+
+        loadData();
+        viewModel=ViewModelProviders.of(this).get(ResultViewModel.class);
         }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void perform() {
         mService.getAnswers(limit,offset).enqueue(new Callback<List<DatailInfo>>() {
             @Override
@@ -87,10 +92,9 @@ public class MainActivity extends AppCompatActivity {
                 datas.addAll(response.body());
                 adapterShowDetail.addData(datas);
                 viewModel.dataSave(adapterShowDetail.getDsDetail());
-
-                progressBar.setVisibility(View.GONE);
-
-
+                adapterShowDetail.notifyDataSetChanged();
+                Toast.makeText(MainActivity.this, ""+offset, Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override

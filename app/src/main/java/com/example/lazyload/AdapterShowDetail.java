@@ -27,7 +27,7 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
         return new ViewHolder(itemView);
     }
     public void update(ArrayList<DatailInfo> newList) {
-        dsDetail = new ArrayList();
+        dsDetail  =new ArrayList();
         dsDetail.addAll(newList);
         notifyDataSetChanged();
     }
@@ -59,9 +59,6 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
         notifyDataSetChanged();
     }
 
-    public ArrayList<DatailInfo> getDsDetail() {
-        return dsDetail;
-    }
 
     @Override
     public int getItemCount() {

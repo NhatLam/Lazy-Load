@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL && checkSearch  ) {
                     isLoading = true;
                 }
             }
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 totalItems = layoutManager.getItemCount();
                 scrollOutItems = layoutManager.findFirstVisibleItemPosition();
 
-                if (isLoading && (currentItems + scrollOutItems == totalItems) && checkSearch  ) {
+                if (isLoading && (currentItems + scrollOutItems == totalItems)  ) {
                     isLoading = false;
                     offset = offset + 500;
                     progressBar.setVisibility(View.VISIBLE);
@@ -154,6 +154,36 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(final String s) {
+        final ArrayList<DatailInfo> newList = new ArrayList();
+        adapterShowDetail.update(newList);
+        checkSearch=false;
+
+        progressBar.setVisibility(View.VISIBLE);
+        mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
+
+            @Override
+
+            public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
+                for (DatailInfo data : response.body()) {
+
+                    if (data.getId().equals(s)) {
+
+                        newList.add(data);
+
+
+
+                    }
+                }
+                adapterShowDetail.addData(newList);
+                progressBar.setVisibility(View.INVISIBLE);
+
+            }
+
+            @Override
+            public void onFailure(Call<List<DatailInfo>> call, Throwable t) {
+
+            }
+        });
 
 
         return false;
@@ -162,43 +192,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(final String s) {
 
 
-        final ArrayList<DatailInfo> newList = new ArrayList();
-        adapterShowDetail.update(newList);
-        progressBar.setVisibility(View.VISIBLE);
-
         if(s.length()==0){
             adapterShowDetail.update(details);
-            progressBar.setVisibility(View.INVISIBLE);
             checkSearch=true;
         }
-        else {
-            checkSearch=false;
 
-            mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
-                @Override
-                public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
-                
-                    for (DatailInfo data : response.body()) {
+        return  true;
 
-                        if (data.getId().equals(s)) {
-
-                            newList.add(data);
-
-                        }
-                    }
-                    adapterShowDetail.update(newList);
-
-                    progressBar.setVisibility(View.INVISIBLE);
-
-                }
-
-                @Override
-                public void onFailure(Call<List<DatailInfo>> call, Throwable t) {
-
-                }
-            });
-        }
-        return true;
     }
 
 

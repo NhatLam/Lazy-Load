@@ -154,12 +154,21 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(final String s) {
+
+
+        return false;
+    }
+    @Override
+    public boolean onQueryTextChange(final String s) {
+
+
         final ArrayList<DatailInfo> newList = new ArrayList();
         adapterShowDetail.update(newList);
         progressBar.setVisibility(View.VISIBLE);
 
         if(s.length()==0){
             adapterShowDetail.update(details);
+            progressBar.setVisibility(View.INVISIBLE);
             checkSearch=true;
         }
         else {
@@ -168,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
                 @Override
                 public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
-
+                
                     for (DatailInfo data : response.body()) {
 
                         if (data.getId().equals(s)) {
@@ -189,16 +198,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             });
         }
-
         return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange( String s) {
-
-
-
-        return false;
     }
 
 

@@ -1,7 +1,9 @@
 package com.example.lazyload;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,13 +37,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         details= new ArrayList();
-
-        mService = ApiUtils.getSOService();
-
         progressBar=findViewById(R.id.progess);
         progressBar.setVisibility(View.VISIBLE);
+        mService = ApiUtils.getSOService();
+
+        adapterShowDetail=new AdapterShowDetail(this);
         rvDetail = findViewById(R.id.recycler_detail);
         rvDetail.setHasFixedSize(true);
+        rvDetail.setAdapter(adapterShowDetail);
+
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvDetail.setLayoutManager(layoutManager);
 
@@ -73,15 +77,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
         loadData();
-        viewModel=ViewModelProviders.of(this).get(ResultViewModel.class);
-        }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+
+        viewModel=ViewModelProviders.of(this).get(ResultViewModel.class);
+
+
     }
 
     private void perform() {
@@ -91,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<DatailInfo> datas=new ArrayList();
                 datas.addAll(response.body());
                 adapterShowDetail.addData(datas);
-                viewModel.dataSave(adapterShowDetail.getDsDetail());
+                viewModel.dataSave(datas);
                 adapterShowDetail.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, ""+offset, Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
             }
 
@@ -111,10 +111,18 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
 
                 details.addAll(response.body());
-                adapterShowDetail=new AdapterShowDetail(details,MainActivity.this);
-                rvDetail.setAdapter(adapterShowDetail);
+                viewModel.dataSave(details);
+                viewModel.getDataSave().observe(MainActivity.this, new Observer<ArrayList<DatailInfo>>() {
+                    @Override
+                    public void onChanged(@Nullable ArrayList<DatailInfo> datailInfos) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        adapterShowDetail.setData(datailInfos);
+
+                    }
+
+
+                });
                 progressBar.setVisibility(View.GONE);
-                viewModel.dataSave(adapterShowDetail.getDsDetail());
 
             }
 

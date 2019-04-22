@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+
 public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.ViewHolder> {
-    ArrayList<DatailInfo> dsDetail;
+    ArrayList<DatailInfo> dsDetail=  new ArrayList();
     Context context;
 
-    public AdapterShowDetail(ArrayList<DatailInfo> dsDetail, Context context) {
-        this.dsDetail = dsDetail;
+    public AdapterShowDetail(Context context) {
         this.context = context;
     }
 
@@ -26,7 +26,11 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
         View itemView = layoutInflater.inflate(R.layout.item_detailinfo, viewGroup, false);
         return new ViewHolder(itemView);
     }
-
+    public void update(ArrayList<DatailInfo> newList) {
+        dsDetail = new ArrayList();
+        dsDetail.addAll(newList);
+        notifyDataSetChanged();
+    }
     @Override
     public void onBindViewHolder(@NonNull AdapterShowDetail.ViewHolder viewHolder, int i) {
 
@@ -42,6 +46,11 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
         }
         viewHolder.country.setText(dsDetail.get(i).getCountry());
     }
+    public void setData(ArrayList<DatailInfo> datas){
+        dsDetail=datas;
+        notifyDataSetChanged();
+    }
+
     public void  addData(ArrayList<DatailInfo> datas){
         for(DatailInfo data : datas)
         {

@@ -26,7 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    int limit = 1000;
+    int limit = 500;
     int offset = 0;
     int currentItems, totalItems, scrollOutItems;
     private SOService mService;
@@ -153,13 +153,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
 
     @Override
-    public boolean onQueryTextSubmit(String s) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(final String s) {
+    public boolean onQueryTextSubmit(final String s) {
         final ArrayList<DatailInfo> newList = new ArrayList();
+        adapterShowDetail.update(newList);
+        progressBar.setVisibility(View.VISIBLE);
+
         if(s.length()==0){
             adapterShowDetail.update(details);
             checkSearch=true;
@@ -167,34 +165,40 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         else {
             checkSearch=false;
 
-                    mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
-                        @Override
-                        public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
+            mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
+                @Override
+                public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
 
-                            for (DatailInfo data : response.body()) {
-                                progressBar.setVisibility(View.VISIBLE);
+                    for (DatailInfo data : response.body()) {
 
-                                if (data.getId().contains(s)) {
+                        if (data.getId().equals(s)) {
 
-                                    newList.add(data);
-
-                                }
-                            }
-                            adapterShowDetail.update(newList);
-                            progressBar.setVisibility(View.INVISIBLE);
+                            newList.add(data);
 
                         }
+                    }
+                    adapterShowDetail.update(newList);
 
-                        @Override
-                        public void onFailure(Call<List<DatailInfo>> call, Throwable t) {
+                    progressBar.setVisibility(View.INVISIBLE);
 
-                        }
-                    });
                 }
 
+                @Override
+                public void onFailure(Call<List<DatailInfo>> call, Throwable t) {
 
+                }
+            });
+        }
 
         return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange( String s) {
+
+
+
+        return false;
     }
 
 

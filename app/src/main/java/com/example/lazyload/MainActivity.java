@@ -26,7 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    int limit = 10;
+    int limit = 1000;
     int offset = 0;
     int currentItems, totalItems, scrollOutItems;
     private SOService mService;
@@ -74,10 +74,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
                 if (isLoading && (currentItems + scrollOutItems == totalItems) && checkSearch  ) {
                     isLoading = false;
-                    offset = offset + 10;
+                    offset = offset + 500;
                     progressBar.setVisibility(View.VISIBLE);
 
                     perform();
+
+
                 }
 
             }
@@ -164,20 +166,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         else {
             checkSearch=false;
-            progressBar.setVisibility(View.VISIBLE);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+
                     mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
                         @Override
                         public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
 
                             for (DatailInfo data : response.body()) {
+                                progressBar.setVisibility(View.VISIBLE);
+
                                 if (data.getId().contains(s)) {
+
                                     newList.add(data);
+
                                 }
                             }
                             adapterShowDetail.update(newList);
+                            progressBar.setVisibility(View.INVISIBLE);
 
                         }
 
@@ -187,10 +191,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         }
                     });
                 }
-            }).start();
-        }
 
-        progressBar.setVisibility(View.INVISIBLE);
+
 
         return true;
     }

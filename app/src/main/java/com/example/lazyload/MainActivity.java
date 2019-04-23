@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL && checkSearch  ) {
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL  ) {
                     isLoading = true;
                 }
             }
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 totalItems = layoutManager.getItemCount();
                 scrollOutItems = layoutManager.findFirstVisibleItemPosition();
 
-                if (isLoading && (currentItems + scrollOutItems == totalItems)  ) {
+                if (isLoading && (currentItems + scrollOutItems == totalItems) && checkSearch  ) {
                     isLoading = false;
                     offset = offset + 500;
                     progressBar.setVisibility(View.VISIBLE);
@@ -190,7 +190,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
     @Override
     public boolean onQueryTextChange(final String s) {
-
 
         if(s.length()==0){
             adapterShowDetail.update(details);

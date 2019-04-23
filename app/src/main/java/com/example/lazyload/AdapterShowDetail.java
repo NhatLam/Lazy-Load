@@ -58,7 +58,9 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
         }
         notifyDataSetChanged();
     }
-
+    public ArrayList<DatailInfo> getAll(){
+        return dsDetail;
+    }
 
     @Override
     public int getItemCount() {

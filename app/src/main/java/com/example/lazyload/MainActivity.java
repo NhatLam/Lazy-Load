@@ -2,21 +2,21 @@ package com.example.lazyload;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.MenuItemCompat;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, BottomNavigationView.OnNavigationItemSelectedListener {
     int limit = 500;
     int offset = 0;
     int currentItems, totalItems, scrollOutItems;
@@ -38,12 +39,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private ResultViewModel viewModel;
     boolean checkSearch=true;
     LinearLayoutManager layoutManager;
+    BottomNavigationView bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         details = new ArrayList();
+        bottomNavigation = findViewById(R.id.bottom_navi);
+
         progressBar = findViewById(R.id.progess);
         progressBar.setVisibility(View.VISIBLE);
         mService = ApiUtils.getSOService();
@@ -56,11 +60,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvDetail.setLayoutManager(layoutManager);
 
+
+
         rvDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL  ) {
                     isLoading = true;
                 }
             }
@@ -88,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
 
         viewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+
+        bottomNavigation.setOnNavigationItemSelectedListener(this);
 
 
     }
@@ -148,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         searchView.setOnQueryTextListener(this);
 
-    return  true;
+        return  true;
     }
 
 
@@ -156,50 +164,67 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextSubmit(final String s) {
         final ArrayList<DatailInfo> newList = new ArrayList();
         adapterShowDetail.update(newList);
+        checkSearch=false;
+
         progressBar.setVisibility(View.VISIBLE);
+        mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
+
+            @Override
+
+            public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
+                for (DatailInfo data : response.body()) {
+
+                    if (data.getId().equals(s)) {
+
+                        newList.add(data);
+
+
+
+                    }
+                }
+                adapterShowDetail.addData(newList);
+                progressBar.setVisibility(View.INVISIBLE);
+
+            }
+
+            @Override
+            public void onFailure(Call<List<DatailInfo>> call, Throwable t) {
+
+            }
+        });
+
+
+        return false;
+    }
+    @Override
+    public boolean onQueryTextChange(final String s) {
 
         if(s.length()==0){
             adapterShowDetail.update(details);
             checkSearch=true;
         }
-        else {
-            checkSearch=false;
 
-            mService.findItem().enqueue(new Callback<List<DatailInfo>>() {
-                @Override
-                public void onResponse(Call<List<DatailInfo>> call, Response<List<DatailInfo>> response) {
+        return  true;
 
-                    for (DatailInfo data : response.body()) {
-
-                        if (data.getId().equals(s)) {
-
-                            newList.add(data);
-
-                        }
-                    }
-                    adapterShowDetail.update(newList);
-
-                    progressBar.setVisibility(View.INVISIBLE);
-
-                }
-
-                @Override
-                public void onFailure(Call<List<DatailInfo>> call, Throwable t) {
-
-                }
-            });
-        }
-
-        return true;
     }
+
 
     @Override
-    public boolean onQueryTextChange( String s) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.action_data:
 
+                break;
+            case R.id.action_location:
+                ArrayList<DatailInfo> listTrans= adapterShowDetail.getAll();
+                Intent location=new Intent(MainActivity.this,MapsActivity.class);
+                location.putExtra("list", listTrans);
 
+                startActivity(location);
+                break;
 
-        return false;
+        }
+        return true;
     }
-
 
 }

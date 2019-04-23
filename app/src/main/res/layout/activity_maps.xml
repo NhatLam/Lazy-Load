@@ -5,17 +5,15 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
-    <ProgressBar
-        android:id="@+id/progess"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsActivity" />
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navi"
         android:layout_width="match_parent"
@@ -25,5 +23,4 @@
         android:background="@color/colorPrimaryDark"
         app:itemIconTint="#FFF"
         ></android.support.design.widget.BottomNavigationView>
-
 </RelativeLayout>

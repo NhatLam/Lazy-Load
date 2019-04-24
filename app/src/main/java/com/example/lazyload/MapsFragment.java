@@ -27,15 +27,6 @@ public class MapsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
         mMapView = rootView.findViewById(R.id.map);
 
-
-        return rootView;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
         viewModel = ViewModelProviders.of(getActivity()).get(ResultViewModel.class);
@@ -60,6 +51,9 @@ public class MapsFragment extends Fragment {
 
 
         });
+        return rootView;
     }
+
+
 }
 

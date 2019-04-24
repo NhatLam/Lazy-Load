@@ -1,29 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_detail"
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
-    <ProgressBar
-        android:id="@+id/progess"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navi"
+        android:layout_height="0dp"
+        android:layout_weight="9.5"
+        android:layout_alignTop="@+id/tabs"/>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
         android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_navigation_main"
-        android:background="@color/colorPrimaryDark"
-        app:itemIconTint="#FFF"
-        ></android.support.design.widget.BottomNavigationView>
+        />
 
-</RelativeLayout>
+</LinearLayout>

@@ -65,6 +65,7 @@ public class DataFragment extends Fragment implements SearchView.OnQueryTextList
         rvDetail.setHasFixedSize(true);
         rvDetail.setAdapter(adapterShowDetail);
 
+        setHasOptionsMenu(true);
 
         rvDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -160,12 +161,13 @@ public class DataFragment extends Fragment implements SearchView.OnQueryTextList
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar, menu);
-        super.onCreateOptionsMenu(menu, inflater);
 
         MenuItem menuitemsearch = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) menuitemsearch.getActionView();
 
         searchView.setOnQueryTextListener(this);
+        super.onCreateOptionsMenu(menu, inflater);
+
     }
 
     @Override

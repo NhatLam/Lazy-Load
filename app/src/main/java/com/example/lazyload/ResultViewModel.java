@@ -8,20 +8,21 @@ import java.util.ArrayList;
 
 public class ResultViewModel extends AndroidViewModel {
     private MutableLiveData<ArrayList<DatailInfo>> dataSave = new MutableLiveData();
-    ArrayList<DatailInfo> datas=new ArrayList<>();
+    ArrayList<DatailInfo> datas;
     public ResultViewModel(@NonNull Application application) {
         super(application);
         datas=new  ArrayList<>();
 
-        dataSave.postValue(datas);
     }
     public void dataSave(ArrayList<DatailInfo> save) {
         datas.addAll(save);
+        dataSave.postValue(datas);
+
     }
 
 
-
     public MutableLiveData<ArrayList<DatailInfo>> getDataSave() {
+
         return dataSave;
     }
 

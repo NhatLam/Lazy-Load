@@ -8,11 +8,11 @@ import android.support.annotation.NonNull;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,15 +57,13 @@ public class DataFragment extends Fragment implements SearchView.OnQueryTextList
         progressBar = rootView.findViewById(R.id.progess);
         progressBar.setVisibility(View.VISIBLE);
         mService = ApiUtils.getSOService();
-
+        viewModel = ViewModelProviders.of(getActivity()).get(ResultViewModel.class);
         adapterShowDetail = new AdapterShowDetail(getContext());
         rvDetail = rootView.findViewById(R.id.recycler_detail);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvDetail.setLayoutManager(layoutManager);
         rvDetail.setHasFixedSize(true);
         rvDetail.setAdapter(adapterShowDetail);
-
-
 
 
         rvDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -96,13 +94,20 @@ public class DataFragment extends Fragment implements SearchView.OnQueryTextList
 
             }
         });
+        viewModel.getDataSave().observe((LifecycleOwner) getContext(), new Observer<ArrayList<DatailInfo>>() {
+            @Override
+            public void onChanged(ArrayList<DatailInfo> datailInfos) {
+                progressBar.setVisibility(View.INVISIBLE);
+                adapterShowDetail.setData(datailInfos);
+
+            }
+
+
+        });
         loadData();
 
 
-        viewModel = ViewModelProviders.of(getActivity()).get(ResultViewModel.class);
-
-
-        return  rootView;
+        return rootView;
 
     }
 
@@ -140,16 +145,7 @@ public class DataFragment extends Fragment implements SearchView.OnQueryTextList
 
                 details.addAll(response.body());
                 viewModel.dataSave(details);
-                viewModel.getDataSave().observe((LifecycleOwner) getContext(), new Observer<ArrayList<DatailInfo>>() {
-                    @Override
-                    public void onChanged( ArrayList<DatailInfo> datailInfos) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        adapterShowDetail.setData(datailInfos);
 
-                    }
-
-
-                });
                 progressBar.setVisibility(View.GONE);
 
             }
@@ -219,8 +215,6 @@ public class DataFragment extends Fragment implements SearchView.OnQueryTextList
         return true;
 
     }
-
-
 
 
 }

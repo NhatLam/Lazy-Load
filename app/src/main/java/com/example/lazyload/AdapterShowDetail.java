@@ -1,79 +1,80 @@
 package com.example.lazyload;
 
+import android.annotation.SuppressLint;
+import android.arch.paging.PagedListAdapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 
 
-public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.ViewHolder> {
-    ArrayList<DatailInfo> dsDetail=  new ArrayList();
-    Context context;
+public class AdapterShowDetail extends PagedListAdapter<DetailInfo,AdapterShowDetail.ItemViewHolder> {
+     Context context;
+
 
     public AdapterShowDetail(Context context) {
+        super(DIFF_CALLBACK);
         this.context = context;
     }
 
+
     @NonNull
     @Override
-    public AdapterShowDetail.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+
+
+
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         View itemView = layoutInflater.inflate(R.layout.item_detailinfo, viewGroup, false);
-        return new ViewHolder(itemView);
-    }
-    public void update(ArrayList<DatailInfo> newList) {
-        dsDetail  =new ArrayList();
-        dsDetail.addAll(newList);
-        notifyDataSetChanged();
-    }
-    @Override
-    public void onBindViewHolder(@NonNull AdapterShowDetail.ViewHolder viewHolder, int i) {
-
-        viewHolder.id.setText(dsDetail.get(i).getId());
-        viewHolder.dyadName.setText(dsDetail.get(i).getDyadName());
-        if (dsDetail.get(i).getSource()!="") {
-            viewHolder.sourceOri.setText(dsDetail.get(i).getSource());
-
-        }
-        else {
-            viewHolder.sourceOri.setVisibility(View.GONE);
-
-        }
-        viewHolder.country.setText(dsDetail.get(i).getCountry());
-    }
-    public void setData(ArrayList<DatailInfo> datas){
-        dsDetail=datas;
-        notifyDataSetChanged();
-    }
-
-    public void  addData(ArrayList<DatailInfo> datas){
-        for(DatailInfo data : datas)
-        {
-            dsDetail.add(data);
-        }
-        notifyDataSetChanged();
+        return new ItemViewHolder(itemView);
     }
 
 
     @Override
-    public int getItemCount() {
-        if (dsDetail==null){
-            return  0;
-        }
-        else {
-            return dsDetail.size();
+    public void onBindViewHolder(@NonNull ItemViewHolder itemViewHolder, int i) {
+        DetailInfo data = getItem(i);
+        if (data != null) {
+
+            itemViewHolder.id.setText(data.getId());
+            itemViewHolder.dyadName.setText(data.getDyadName());
+            if (data.getSource() != "") {
+                itemViewHolder.sourceOri.setText(data.getSource());
+
+            } else {
+                itemViewHolder.sourceOri.setVisibility(View.GONE);
+
+            }
+            itemViewHolder.country.setText(data.getCountry());
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+
+
+    private static DiffUtil.ItemCallback<DetailInfo> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<DetailInfo>() {
+                @Override
+                public boolean areItemsTheSame(DetailInfo oldItem, DetailInfo newItem) {
+                    return oldItem.id == newItem.id;
+                }
+                @SuppressLint("DiffUtilEquals")
+
+                @Override
+                public boolean areContentsTheSame(DetailInfo oldItem, DetailInfo newItem) {
+                    return oldItem.equals(newItem);
+                }
+            };
+
+
+
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView id, dyadName, sourceOri, country;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             id = itemView.findViewById(R.id.id);
             dyadName = itemView.findViewById(R.id.dyad_name);
@@ -83,4 +84,7 @@ public class AdapterShowDetail extends RecyclerView.Adapter<AdapterShowDetail.Vi
 
         }
     }
+
+
 }
+

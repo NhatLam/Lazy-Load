@@ -51,10 +51,8 @@ public  class DataFragment extends Fragment {
 
         rvDetail = rootView.findViewById(R.id.recycler_detail);
         rvDetail.setLayoutManager(layoutManager);
-        rvDetail.setHasFixedSize(true);
 
 
-        //setHasOptionsMenu(true);
 
         viewModel = ViewModelProviders.of(getActivity()).get(ResultViewModel.class);
         adapterShowDetail = new AdapterShowDetail(getContext());

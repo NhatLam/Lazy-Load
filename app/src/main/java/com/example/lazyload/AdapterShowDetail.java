@@ -11,24 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 
 
 public class AdapterShowDetail extends PagedListAdapter<DetailInfo,AdapterShowDetail.ItemViewHolder> {
      Context context;
-
-
     public AdapterShowDetail(Context context) {
         super(DIFF_CALLBACK);
         this.context = context;
     }
 
 
+
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-
-
-
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         View itemView = layoutInflater.inflate(R.layout.item_detailinfo, viewGroup, false);
         return new ItemViewHolder(itemView);
@@ -49,13 +46,13 @@ public class AdapterShowDetail extends PagedListAdapter<DetailInfo,AdapterShowDe
                 itemViewHolder.sourceOri.setVisibility(View.GONE);
 
             }
-            itemViewHolder.country.setText(data.getCountry());
+               itemViewHolder.country.setText(data.getCountry());
         }
     }
 
 
 
-    private static DiffUtil.ItemCallback<DetailInfo> DIFF_CALLBACK =
+    public static DiffUtil.ItemCallback<DetailInfo> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<DetailInfo>() {
                 @Override
                 public boolean areItemsTheSame(DetailInfo oldItem, DetailInfo newItem) {

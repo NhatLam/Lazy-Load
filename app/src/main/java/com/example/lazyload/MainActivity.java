@@ -1,6 +1,5 @@
 package com.example.lazyload;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
 import android.support.design.widget.TabLayout;
@@ -15,12 +14,13 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
-    public ResultViewModel viewModel;
+    Fragment frag ;
+    MapsFragment mapFragment ;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        mapFragment = new MapsFragment();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager =  findViewById(R.id.view_pager);
@@ -29,25 +29,46 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        viewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 1){
+                    mapFragment.reloadMapview();
+
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
     }
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            Fragment frag=null;
+
             switch (position){
                 case 0:
                     frag = new DataFragment();
                     break;
                 case 1:
-                    frag = new MapsFragment();
+                    frag = mapFragment;
                     break;
 
             }
